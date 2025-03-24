@@ -6,7 +6,7 @@ a {
   text-decoration: none;
 }
 
-.search-form {
+.form {
   display: flex;
   justify-content: center;
   align-items: center;
