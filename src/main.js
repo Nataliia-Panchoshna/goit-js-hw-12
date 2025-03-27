@@ -1,5 +1,5 @@
-import { fetchImages, addPage, resetPage, page } from './js/pixabay-api';
-import { markup } from './js/render-functions.js';
+import { fetchImages, addPage, resetPage, page } from './js/pixabay-api'; 
+import { markup, clearGallery } from './js/render-functions';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
@@ -7,6 +7,7 @@ const box = document.querySelector('.gallery');
 const loadMoreBtn = document.querySelector('.load-more');
 const form = document.querySelector('.form');
 const input = document.querySelector('.search-input');
+const loader = document.querySelector('.loader');
 
 let currentQuery = '';
 
@@ -24,7 +25,7 @@ form.addEventListener('submit', async event => {
   }
 
   currentQuery = inputValue;
-  box.innerHTML = '';
+  clearGallery(); // 🟢 Очищаємо галерею перед новим пошуком
   resetPage();
   loadMoreBtn.classList.add('hide');
 
@@ -39,8 +40,7 @@ loadMoreBtn.addEventListener('click', async () => {
 
 async function loadImages(query) {
   try {
-    const loader = document.querySelector('.loader');
-    loader.classList.remove('hide');
+    loader.classList.remove('hide'); // 🟢 Видалено дублювання змінної `loader`
 
     const data = await fetchImages(query);
 
@@ -62,6 +62,7 @@ async function loadImages(query) {
     } else {
       loadMoreBtn.classList.remove('hide');
     }
+
     const { height: cardHeight } = document
       .querySelector('.gallery')
       .firstElementChild.getBoundingClientRect();

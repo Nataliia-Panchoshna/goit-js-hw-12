@@ -7,9 +7,13 @@ const lightbox = new SimpleLightbox('.gallery a', {
   captionDelay: 250,
 });
 
+export function clearGallery() {
+  box.innerHTML = '';
+}
+
 export function markup(data) {
   const { hits } = data;
-  if (!hits.length) return; // Если данных нет - ничего не делаем
+  if (!hits.length) return; 
 
   const markup = hits
     .map(image => {
