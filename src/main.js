@@ -40,7 +40,7 @@ loadMoreBtn.addEventListener('click', async () => {
 
 async function loadImages(query) {
   try {
-    loader.classList.remove('hide'); // 🟢 Видалено дублювання змінної `loader`
+    loader.classList.remove('hide'); // 🟢 Використовуємо глобальну змінну loader без дублювання
 
     const data = await fetchImages(query);
 
@@ -53,24 +53,23 @@ async function loadImages(query) {
 
     markup(data);
 
-    if (
-      data.hits.length < 40 ||
-      data.hits.length + (page - 1) * 40 >= data.totalHits
-    ) {
+    // 🟢 Виправлена умова для кнопки "Load more"
+    if (data.hits.length < 15 || (page * 15) >= data.totalHits) { 
       loadMoreBtn.classList.add('hide');
       showError("We're sorry, but you've reached the end of search results.");
     } else {
       loadMoreBtn.classList.remove('hide');
     }
 
-    const { height: cardHeight } = document
-      .querySelector('.gallery')
-      .firstElementChild.getBoundingClientRect();
-
-    window.scrollBy({
-      top: cardHeight * 2,
-      behavior: 'smooth',
-    });
+    // 🟢 Захист від помилки, якщо `.gallery` порожня
+    const firstElement = document.querySelector('.gallery').firstElementChild;
+    if (firstElement) {
+      const { height: cardHeight } = firstElement.getBoundingClientRect();
+      window.scrollBy({
+        top: cardHeight * 2,
+        behavior: 'smooth',
+      });
+    }
   } catch (error) {
     showError(error.message);
   } finally {

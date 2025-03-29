@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export let page = 1;
-const perPage = 40;
+const perPage = 15;
 
 export function resetPage() {
   page = 1;
