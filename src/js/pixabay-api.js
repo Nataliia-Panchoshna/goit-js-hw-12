@@ -19,8 +19,8 @@ export async function fetchImages(query) {
     image_type: 'photo',
     orientation: 'horizontal',
     safesearch: 'true',
-    page,
-    per_page: perPage,
+    page: page,
+    per_page: 15,
   });
   const URL = `https://pixabay.com/api/?${urlParams}`;
 
