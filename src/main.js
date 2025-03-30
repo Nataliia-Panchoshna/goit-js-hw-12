@@ -14,6 +14,7 @@ let page = 1;
 const perPage = 15;
 
 hideElement(loadMoreBtn);
+hideElement(loader); 
 
 form.addEventListener('submit', async event => {
   event.preventDefault();
@@ -29,16 +30,15 @@ form.addEventListener('submit', async event => {
   page = resetPage();
   hideElement(loadMoreBtn);
 
-  await loadImages(currentQuery);
-  input.value = '';
+  await loadImages(currentQuery, false);
 });
 
 loadMoreBtn.addEventListener('click', async () => {
   page = addPage(page);
-  await loadImages(currentQuery);
+  await loadImages(currentQuery, true);
 });
 
-async function loadImages(query) {
+async function loadImages(query, shouldScroll) {
   try {
     showElement(loader);
 
@@ -58,7 +58,9 @@ async function loadImages(query) {
       showElement(loadMoreBtn);
     }
 
-    scrollPage();
+    if (shouldScroll) {
+      scrollPage();
+    }
   } catch (error) {
     showError(`Error fetching images: ${error.message}`);
   } finally {
