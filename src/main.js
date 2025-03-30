@@ -1,4 +1,4 @@
-import { fetchImages, addPage, resetPage, page } from './js/pixabay-api'; 
+import { fetchImages, addPage, resetPage } from './js/pixabay-api';
 import { markup, clearGallery } from './js/render-functions';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
@@ -10,6 +10,7 @@ const input = document.querySelector('.search-input');
 const loader = document.querySelector('.loader');
 
 let currentQuery = '';
+let page = 1;
 
 loadMoreBtn.classList.add('hide');
 
@@ -25,8 +26,8 @@ form.addEventListener('submit', async event => {
   }
 
   currentQuery = inputValue;
-  clearGallery(); // 🟢 Очищаємо галерею перед новим пошуком
-  resetPage();
+  clearGallery();
+  page = resetPage();
   loadMoreBtn.classList.add('hide');
 
   await loadImages(currentQuery);
@@ -34,15 +35,15 @@ form.addEventListener('submit', async event => {
 });
 
 loadMoreBtn.addEventListener('click', async () => {
-  addPage();
+  page = addPage(page);
   await loadImages(currentQuery);
 });
 
 async function loadImages(query) {
   try {
-    loader.classList.remove('hide'); // 🟢 Використовуємо глобальну змінну loader без дублювання
+    loader.classList.remove('hide');
 
-    const data = await fetchImages(query);
+    const data = await fetchImages(query, page);
 
     if (data.hits.length === 0 && data.totalHits === 0) {
       showError(
@@ -53,23 +54,21 @@ async function loadImages(query) {
 
     markup(data);
 
-    // 🟢 Виправлена умова для кнопки "Load more"
-    if (data.hits.length < 15 || (page * 15) >= data.totalHits) { 
+    if (data.hits.length < 15 || page * 15 >= data.totalHits) {
       loadMoreBtn.classList.add('hide');
       showError("We're sorry, but you've reached the end of search results.");
     } else {
       loadMoreBtn.classList.remove('hide');
     }
 
-    // 🟢 Захист від помилки, якщо `.gallery` порожня
-    const firstElement = document.querySelector('.gallery').firstElementChild;
-    if (firstElement) {
-      const { height: cardHeight } = firstElement.getBoundingClientRect();
-      window.scrollBy({
-        top: cardHeight * 2,
-        behavior: 'smooth',
-      });
-    }
+    const { height: cardHeight } = document
+      .querySelector('.gallery')
+      .firstElementChild.getBoundingClientRect();
+
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: 'smooth',
+    });
   } catch (error) {
     showError(error.message);
   } finally {
