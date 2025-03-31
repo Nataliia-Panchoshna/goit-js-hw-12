@@ -1,4 +1,4 @@
-import { fetchImages, addPage, resetPage } from './js/pixabay-api';
+import { fetchImages, addPage, resetPage } from './js/pixabay-api'; 
 import { markup, clearGallery } from './js/render-functions';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
@@ -45,6 +45,7 @@ async function loadImages(query, shouldScroll) {
     const data = await fetchImages(query, page);
 
     if (data.hits.length === 0) {
+      clearGallery();  
       showError('Sorry, no images found. Try another search!');
       return;
     }
@@ -53,7 +54,9 @@ async function loadImages(query, shouldScroll) {
 
     if (page * perPage >= data.totalHits) {
       hideElement(loadMoreBtn);
-      showError("We're sorry, but you've reached the end of search results.");
+      if (page > 1) { 
+        showError("We're sorry, but you've reached the end of search results.");
+      }
     } else {
       showElement(loadMoreBtn);
     }
@@ -62,6 +65,7 @@ async function loadImages(query, shouldScroll) {
       scrollPage();
     }
   } catch (error) {
+    clearGallery();
     showError(`Error fetching images: ${error.message}`);
   } finally {
     hideElement(loader);
